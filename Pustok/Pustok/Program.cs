@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Pustok.Extensions;
 using Pustok.Hubs;
+using Microsoft.Extensions.Configuration;
+using Pustok.Email;
 
 namespace Pustok;
 
@@ -26,6 +28,18 @@ public class Program
         builder.Services.AddAuth();
         builder.Services.AddCustomServices();
         builder.Services.AddSignalR();
+    }
+     
+    public IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var emailConfig = Configuration
+            .GetSection("EmailConfiguration")
+            .Get<EmailConfiguration>();
+        services.AddSingleton(emailConfig);
+
+        services.AddControllers();
     }
 
     private static void ConfigureMiddlewarePipeline(WebApplication app)
